@@ -1,0 +1,51 @@
+name: testpypi
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pre_commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: j178/prek-action@v2.0.6
+
+      - uses: pre-commit-ci/lite-action@v1.1.0
+        if: always()
+
+  build_wheels:
+    name: Build wheels
+    uses: ./.github/workflows/build.yaml
+    needs:
+      - pre_commit
+
+  testpypi:
+    name: Publish package to TestPyPI
+    needs:
+      - build_wheels
+    environment:
+      name: ${{ github.event_name }}
+      url: https://test.pypi.org/p/cx-Logging
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: wheelhouse
+          pattern: cx-logging-*
+          merge-multiple: true
+
+      - name: Publish package to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: wheelhouse/
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
+          verbose: true
