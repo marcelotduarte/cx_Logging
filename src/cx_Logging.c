@@ -3,6 +3,7 @@
 //   Shared library for logging used by Python and C code.
 //-----------------------------------------------------------------------------
 
+#include "pythoncapi_compat.h"
 #include "cx_Logging.h"
 
 #ifndef UNDER_CE
@@ -1522,7 +1523,7 @@ CX_LOGGING_API(int) LogPythonExceptionWithTraceback(
         return LogPythonExceptionNoTraceback("cannot determine size");
     }
     for (i = 0; i < numElements; i++) {
-        line = PyList_GET_ITEM(result, i);
+        line = PyList_GetItemRef(result, i);
         if (GetEncodedStringForPython(line, &encodedLine) < 0)
             return -1;
         LogMessageForPythonV(LOG_LEVEL_ERROR, "    %s",
@@ -1632,7 +1633,7 @@ static int LogArgumentsFromErrorObj(
     }
     LogMessageForPythonV(level, "    Arguments:");
     for (i = 0; i < size; i++) {
-        item = PyList_GET_ITEM(items, i);
+        item = PyList_GetItemRef(items, i);
         key = PyTuple_GET_ITEM(item, 0);
         value = PyTuple_GET_ITEM(item, 1);
         if (GetEncodedStringForPython(key, &encodedKey) < 0)
@@ -1669,7 +1670,7 @@ static int LogListOfStringsFromErrorObj(
     }
     LogMessageForPythonV(level, "    %s:", header);
     for (i = 0; i < size; i++) {
-        value = PyList_GET_ITEM(list, i);
+        value = PyList_GetItemRef(list, i);
         if (GetEncodedStringForPython(value, &encodedValue) < 0)
             return -1;
         LogMessageForPythonV(level, "        %s",
