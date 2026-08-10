@@ -4,10 +4,10 @@ on:
   push:
     tags:
       - v*
+  workflow_call:
   workflow_dispatch:
 
 jobs:
-
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
@@ -16,15 +16,17 @@ jobs:
         os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, windows-11-arm]
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
-          cache: 'pip'
-          python-version: '3.12'
+          cache: "pip"
+          python-version: "3.12"
 
       - name: Build wheels
-        run: python -m pip install --upgrade cibuildwheel && cibuildwheel
+        run: |
+          python -m pip install --upgrade "cibuildwheel>=4.2.0"
+          cibuildwheel
 
       - name: Add sdist
         if: runner.os == 'Linux'
@@ -32,7 +34,7 @@ jobs:
           python -m pip install --upgrade pip build
           python -m build . --sdist -o wheelhouse
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: cx-logging-${{ matrix.os }}
           path: wheelhouse
@@ -49,9 +51,8 @@ jobs:
     permissions:
       id-token: write
     steps:
-
       - name: Download all artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           path: wheelhouse
           pattern: cx-logging-*

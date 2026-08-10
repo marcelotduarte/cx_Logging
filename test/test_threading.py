@@ -1,7 +1,8 @@
-import cx_Logging
 import os
 import sys
 import threading
+
+import cx_Logging
 
 if len(sys.argv) > 1:
     num_threads = int(sys.argv[1])

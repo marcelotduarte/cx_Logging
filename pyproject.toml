@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "setuptools>=78.1.1,<=80.9.0",
+    "setuptools~=84.0",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -27,6 +27,12 @@ dynamic = ["version"]
 
 [project.urls]
 Homepage = "https://github.com/anthony-tuininga/cx_Logging"
+
+[dependency-groups]
+dev = [
+    "cibuildwheel>=4.2.0",
+    "prek>=0.4.0,<0.5.0",
+]
 
 [tool.setuptools]
 zip-safe = false

@@ -1,19 +1,31 @@
+default_language_version:
+  python: python3.12
+
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
-    -   id: trailing-whitespace
-    -   id: end-of-file-fixer
-    -   id: check-yaml
-    -   id: check-added-large-files
--   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.3
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: check-executables-have-shebangs
+      - id: check-symlinks
+      - id: check-toml
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: fix-byte-order-marker
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+      - id: trailing-whitespace
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.2
     hooks:
-    -   id: ruff-check
-    -   id: ruff-format
--   repo: https://github.com/abravalheri/validate-pyproject
-    rev: v0.24.1
+      - id: ruff-check
+        args: ["--fix", "--show-fixes", "--unsafe-fixes"]
+      - id: ruff-format
+  - repo: https://github.com/abravalheri/validate-pyproject
+    rev: v0.25
     hooks:
-    -   id: validate-pyproject
+      - id: validate-pyproject
         additional_dependencies:
-        - validate-pyproject-schema-store[all]>=2024.11.22
+          - validate-pyproject-schema-store[all]>=2026.08.08

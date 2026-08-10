@@ -7,9 +7,9 @@ python setup.py build install
 import os
 import sys
 
-from setuptools import setup, Extension
 import setuptools.command.build_ext
 import setuptools.command.install
+from setuptools import Extension, setup
 
 with open("VERSION") as f:
     BUILD_VERSION = f.read().strip()
@@ -29,23 +29,23 @@ class build_ext(setuptools.command.build_ext.build_ext):
             self.mkpath(self.build_implib)
             if self.compiler.compiler_type == "msvc":
                 self.import_library_name = os.path.join(
-                    self.build_implib, "%s.lib" % ext.name
+                    self.build_implib, f"{ext.name}.lib"
                 )
-                extra_link_args.append("/IMPLIB:%s" % self.import_library_name)
+                extra_link_args.append(f"/IMPLIB:{self.import_library_name}")
             else:
                 self.import_library_name = os.path.join(
-                    self.build_implib, "lib%s.a" % ext.name
+                    self.build_implib, f"lib{ext.name}.a"
                 )
                 extra_link_args.append("-Wl,--add-stdcall-alias")
                 extra_link_args.append("-Wl,--enable-stdcall-fixup")
-                extra_link_args.append("-Wl,--out-implib=%s" % self.import_library_name)
+                extra_link_args.append(f"-Wl,--out-implib={self.import_library_name}")
             ext.libraries = ["ole32"]
         else:
             file_name = self.get_ext_filename(ext.name)
             if sys.platform.startswith("aix"):
-                extra_link_args.append("-Wl,-so%s" % file_name)
+                extra_link_args.append(f"-Wl,-so{file_name}")
             else:
-                extra_link_args.append("-Wl,-soname,%s" % file_name)
+                extra_link_args.append(f"-Wl,-soname,{file_name}")
         super().build_extension(ext)
 
     def finalize_options(self):
@@ -150,7 +150,7 @@ extension = Extension(
 
 # perform the setup
 setup(
-    cmdclass=dict(build_ext=build_ext, install=install),
+    cmdclass={"build_ext": build_ext, "install": install},
     version=BUILD_VERSION,
     ext_modules=[extension],
 )
